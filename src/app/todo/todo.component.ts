@@ -18,6 +18,7 @@ export class TodoComponent {
       isComplete: false
     }
     this.todoArray.push(item)
+    this.todoArray = [...this.todoArray, item]
     this.inputValue = '';
   }
 
@@ -37,10 +38,6 @@ export class TodoComponent {
 
   selectCategory(selectedCategory: string) {
     this.category = selectedCategory;
-
-    if(this.category === 'All'){
-    
-    }
   }
 
   clearCompleted(){
