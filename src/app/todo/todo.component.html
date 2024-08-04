@@ -12,11 +12,25 @@
             <div class="todo-item custom-checkbox" *ngFor="let item of getFilteredTodos(); let i = index">
                 <div>
                     <input type="checkbox" [name]="'check' + i" [id]="i" [checked]="item.isComplete">
-                    <span class="checkmark" (click)="item.isComplete = !item.isComplete"></span>
-                    <label [for]="i" class="todo-value" [class.value-completed]="item.isComplete">{{item.value}}</label>
-                </div>
+                    <span class="checkmark" (click)="item.isComplete = !item.isComplete" [class.d-none]="editIndex === i"></span>
+                    <ng-container *ngIf="editIndex === i; else displayLabel">
+                        <input id="edit-input-{{i}}"
+                               type="text"
+                               class="edit-value"
+                               [(ngModel)]="newTodoValue"
+                               (blur)="handleBlur()"
+                               (keydown)="handleKeydown($event)">
+                      </ng-container>
+                      
+                      <ng-template #displayLabel>
+                        <label [for]="i" class="todo-value" [class.value-completed]="item.isComplete"
+                               (dblclick)="startEditing(i)">
+                          {{item.value}}
+                        </label>
+                      </ng-template>
+                    </div>
 
-                <button class="btn-close" (click)="deleteTodo(i)"></button>
+                <button class="btn-close" (click)="deleteTodo(i)" [class.d-none]="editIndex === i"></button>
             </div>
 
             <div class="todo-length text-center" *ngIf="getFilteredTodos().length === 0">
@@ -28,7 +42,7 @@
 
             <div class="buttons-todo">
                 <button *ngFor="let cat of categories" [class.active-category]="category === cat"
-                    (click)="selectCategory(cat)">
+                    (click)="selectCategory(cat)" >
                     {{ cat }}
                 </button>
             </div>

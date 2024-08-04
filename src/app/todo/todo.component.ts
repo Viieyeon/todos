@@ -17,7 +17,6 @@ export class TodoComponent {
       value: this.inputValue,
       isComplete: false
     }
-    this.todoArray.push(item)
     this.todoArray = [...this.todoArray, item]
     this.inputValue = '';
   }
@@ -53,6 +52,41 @@ export class TodoComponent {
       return this.todoArray.filter(item => item.isComplete);
     }
     return this.todoArray; 
+  }
+
+  editIndex: number | null = null; 
+  newTodoValue: string = ''; 
+
+  startEditing(index: number) {
+    this.editIndex = index;
+    this.newTodoValue = this.todoArray[index].value; 
+    setTimeout(() => {
+      const inputElement = document.getElementById('edit-input-' + index) as HTMLInputElement;
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, 0);
+  }
+
+  finishEditing() {
+    if (this.editIndex !== null) {
+      if (this.newTodoValue.trim()) {
+        this.todoArray[this.editIndex].value = this.newTodoValue;
+        console.log(this.todoArray[this.editIndex])
+      }
+      this.editIndex = null;
+      this.newTodoValue = '';
+    }
+  }
+
+  handleBlur() {
+    this.finishEditing();
+  }
+
+  handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.finishEditing();
+    }
   }
 }
 

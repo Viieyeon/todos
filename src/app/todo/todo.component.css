@@ -52,7 +52,6 @@ h1 {
     display: none;
 }
 
-/* Стиль для кастомного чекбокса */
 .custom-checkbox {
     display: flex;
     align-items: center;
@@ -79,14 +78,12 @@ h1 {
     border: solid #fcd71f;
 }
 
-/* Стиль для галочки внутри кастомного чекбокса */
 .custom-checkbox .checkmark::after {
     content: "";
     position: absolute;
     display: none;
 }
 
-/* Показываем галочку, когда чекбокс отмечен */
 .custom-checkbox input:checked+.checkmark::after {
     display: block;
     left: 40%;
@@ -190,4 +187,9 @@ h1 {
     font-size: 16px;
     text-align: center;
     width: 100%;
+}
+
+.edit-value{
+    margin-left: 10px;
+    font-size: 24px;
 }
