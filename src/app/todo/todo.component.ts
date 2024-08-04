@@ -1,0 +1,65 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-todo',
+  templateUrl: './todo.component.html',
+  styleUrl: './todo.component.css'
+})
+export class TodoComponent {
+  inputValue: string = '';
+  todoArray: TodoItem[] = [];
+  countNot = 0;
+  categories = ['All', 'Active', 'Completed'];
+  category = 'All';
+
+  saveTodo() {
+    let item: TodoItem = {
+      value: this.inputValue,
+      isComplete: false
+    }
+    this.todoArray.push(item)
+    this.inputValue = '';
+  }
+
+  checkAll() {
+    const allTrue = this.todoArray.every(item => item.isComplete);
+    this.todoArray.forEach(item => item.isComplete = !allTrue);
+  }
+
+  deleteTodo(i: number) {
+    this.todoArray.splice(i, 1);
+  }
+
+  countNotComplite(): number {
+    let notArray = this.todoArray.filter(item => !item.isComplete)
+    return notArray.length;
+  }
+
+  selectCategory(selectedCategory: string) {
+    this.category = selectedCategory;
+
+    if(this.category === 'All'){
+    
+    }
+  }
+
+  clearCompleted(){
+    this.todoArray = this.todoArray.filter(item => !item.isComplete)
+  }
+
+  getFilteredTodos() {
+    if (this.category === 'All') {
+      return this.todoArray;
+    } else if (this.category === 'Active') {
+      return this.todoArray.filter(item => !item.isComplete);
+    } else if (this.category === 'Completed') {
+      return this.todoArray.filter(item => item.isComplete);
+    }
+    return this.todoArray; 
+  }
+}
+
+export interface TodoItem {
+  value: string,
+  isComplete: boolean
+}

@@ -1,0 +1,193 @@
+h1 {
+    text-transform: uppercase;
+    margin-bottom: 50px;
+}
+
+.todo-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.todo-input {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.todo-input input {
+    width: 100%;
+    height: 70px;
+    border: 2px solid #161616;
+    padding: 10px;
+    padding-left: 50px;
+    font-size: 30px;
+}
+
+.todo-input input:focus {
+    border: 2px solid #fcd71f !important;
+    box-shadow: 0 0 8px rgba(255, 217, 1, 0.858);
+}
+
+.todo-list,
+.todo-info {
+    width: 40%;
+    border: 1px solid #3c3c3c;
+    padding: 10px;
+    font-size: 30px;
+    border-top: 0;
+}
+
+.todo-item {
+    padding: 10px;
+}
+
+.todo-item:not(:nth-child(1)) {
+    border-top: 1px solid #3c3c3c;
+}
+
+
+.custom-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+/* Стиль для кастомного чекбокса */
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 30px;
+    font-size: 16px;
+}
+
+.custom-checkbox .checkmark {
+    position: absolute;
+    top: auto;
+    left: 0;
+    height: 30px;
+    width: 30px;
+    background-color: #eee;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+
+.custom-checkbox input:checked+.checkmark {
+    background-color: #ffffff;
+    border: solid #fcd71f;
+}
+
+/* Стиль для галочки внутри кастомного чекбокса */
+.custom-checkbox .checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Показываем галочку, когда чекбокс отмечен */
+.custom-checkbox input:checked+.checkmark::after {
+    display: block;
+    left: 40%;
+    top: 30%;
+    width: 5px;
+    height: 10px;
+    border: solid #fcd71f;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+
+.custom-checkbox:hover .checkmark {
+    background-color: #ccc;
+}
+
+.custom-checkbox input:focus+.checkmark {
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.todo-value {
+    margin-left: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.value-completed {
+    color: #fcd71f98;
+    text-decoration: line-through;
+}
+
+.todo-input {
+    position: relative;
+    width: 40%;
+}
+
+.todo-all-button {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+}
+
+.todo-all-button::before {
+    content: "\276f";
+    display: inline-block;
+    font-size: 22px;
+    color: #fcd71f98;
+    padding: 10px 27px;
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.btn-close {
+    display: none;
+}
+
+.todo-item:hover .btn-close {
+    display: block;
+}
+
+.todo-left{
+    font-size: 16px;
+}
+
+.buttons-todo button{
+    font-size: 16px;
+    background: none;
+    border: none;
+    color: #3c3c3c;
+}
+
+.buttons-todo{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.todo-info{
+    display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.active-category{
+    border: 1px solid #fcd71f !important;
+}
+
+.not-task{
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+}

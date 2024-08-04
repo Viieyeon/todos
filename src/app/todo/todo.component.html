@@ -1,0 +1,39 @@
+<div class="todos">
+    <div class="container todo-container">
+        <h1 class="mt-5 text-warning">Todos</h1>
+
+        <div class="todo-input">
+            <button class="todo-all-button" *ngIf="todoArray.length > 0" (click)="checkAll()"></button>
+            <input type="text" name="todoValue" [(ngModel)]="inputValue" placeholder="What needs to be done?"
+                (keydown.enter)="saveTodo()">
+        </div>
+
+        <div class="todo-list" [class.d-none]="todoArray.length === 0">
+            <div class="todo-item custom-checkbox" *ngFor="let item of getFilteredTodos(); let i = index">
+                <div>
+                    <input type="checkbox" [name]="'check' + i" [id]="i" [checked]="item.isComplete">
+                    <span class="checkmark" (click)="item.isComplete = !item.isComplete"></span>
+                    <label [for]="i" class="todo-value" [class.value-completed]="item.isComplete">{{item.value}}</label>
+                </div>
+
+                <button class="btn-close" (click)="deleteTodo(i)"></button>
+            </div>
+
+            <div class="todo-length text-center" *ngIf="getFilteredTodos().length === 0">
+                <span class="not-task">There are no tasks</span>
+            </div>
+        </div>
+        <div class="todo-info" *ngIf="todoArray.length > 0">
+            <span class="todo-left">{{countNotComplite()}} items left</span>
+
+            <div class="buttons-todo">
+                <button *ngFor="let cat of categories" [class.active-category]="category === cat"
+                    (click)="selectCategory(cat)">
+                    {{ cat }}
+                </button>
+            </div>
+
+            <button class="btn" (click)="clearCompleted()">Clear Completed</button>
+        </div>
+    </div>
+</div>
