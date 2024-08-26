@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TodoDataServiceService } from '../service/todo-data-service.service';
 
 @Component({
   selector: 'app-todo',
@@ -10,56 +11,58 @@ export class TodoComponent {
   todoArray: TodoItem[] = [];
   countNot = 0;
   categories = ['All', 'Active', 'Completed'];
-  category = 'All';
+
+  constructor(private todoDataService: TodoDataServiceService) { }
+
+  ngOnInit() {
+    this.todoArray = this.todoDataService.getAllTodos();
+  }
 
   saveTodo() {
-    let item: TodoItem = {
-      value: this.inputValue,
-      isComplete: false
+    if (this.inputValue.trim()) {
+      this.todoDataService.saveTodo(this.inputValue);
+      this.todoArray = this.todoDataService.getAllTodos();
     }
-    this.todoArray = [...this.todoArray, item]
     this.inputValue = '';
   }
 
-  checkAll() {
-    const allTrue = this.todoArray.every(item => item.isComplete);
-    this.todoArray.forEach(item => item.isComplete = !allTrue);
-  }
-
   deleteTodo(i: number) {
-    this.todoArray.splice(i, 1);
+    this.todoDataService.removeTodo(i);
+    this.todoArray = this.todoDataService.getAllTodos();
   }
 
-  countNotComplite(): number {
-    let notArray = this.todoArray.filter(item => !item.isComplete)
-    return notArray.length;
+  checkAll() {
+    this.todoDataService.checkAll();
+    this.todoArray = this.todoDataService.getAllTodos();
+  }
+
+  countNotComplete(): number {
+    return this.todoDataService.countNotComplete();
   }
 
   selectCategory(selectedCategory: string) {
-    this.category = selectedCategory;
+    this.todoDataService.selectCategory(selectedCategory);
   }
 
-  clearCompleted(){
-    this.todoArray = this.todoArray.filter(item => !item.isComplete)
+  clearCompleted() {
+    this.todoDataService.clearCompleted();
+    this.todoArray = this.todoDataService.getAllTodos();
   }
 
-  getFilteredTodos() {
-    if (this.category === 'All') {
-      return this.todoArray;
-    } else if (this.category === 'Active') {
-      return this.todoArray.filter(item => !item.isComplete);
-    } else if (this.category === 'Completed') {
-      return this.todoArray.filter(item => item.isComplete);
-    }
-    return this.todoArray; 
+  getFilteredTodos(): TodoItem[] {
+    return this.todoDataService.getFilteredTodos();
   }
 
-  editIndex: number | null = null; 
-  newTodoValue: string = ''; 
+  getCategory() {
+    return this.todoDataService.getCategory();
+  }
+
+  editIndex: number | null = null;
+  newTodoValue: string = '';
 
   startEditing(index: number) {
     this.editIndex = index;
-    this.newTodoValue = this.todoArray[index].value; 
+    this.newTodoValue = this.todoArray[index].value;
     setTimeout(() => {
       const inputElement = document.getElementById('edit-input-' + index) as HTMLInputElement;
       if (inputElement) {
@@ -71,8 +74,8 @@ export class TodoComponent {
   finishEditing() {
     if (this.editIndex !== null) {
       if (this.newTodoValue.trim()) {
-        this.todoArray[this.editIndex].value = this.newTodoValue;
-        console.log(this.todoArray[this.editIndex])
+        this.todoDataService.updateTodoValue(this.editIndex, this.newTodoValue);
+        this.todoArray = this.todoDataService.getAllTodos();
       }
       this.editIndex = null;
       this.newTodoValue = '';
@@ -91,6 +94,7 @@ export class TodoComponent {
 }
 
 export interface TodoItem {
+  id: string,
   value: string,
   isComplete: boolean
 }

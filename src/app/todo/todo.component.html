@@ -11,10 +11,11 @@
         <div class="todo-list" [class.d-none]="todoArray.length === 0">
             <div class="todo-item custom-checkbox" *ngFor="let item of getFilteredTodos(); let i = index">
                 <div>
-                    <input type="checkbox" [name]="'check' + i" [id]="i" [checked]="item.isComplete">
+                    <input type="checkbox" [name]="'check' + i" [checked]="item.isComplete">
                     <span class="checkmark" (click)="item.isComplete = !item.isComplete" [class.d-none]="editIndex === i"></span>
                     <ng-container *ngIf="editIndex === i; else displayLabel">
-                        <input id="edit-input-{{i}}"
+                        <input 
+                              [id]="item.id"
                                type="text"
                                class="edit-value"
                                [(ngModel)]="newTodoValue"
@@ -23,7 +24,7 @@
                       </ng-container>
                       
                       <ng-template #displayLabel>
-                        <label [for]="i" class="todo-value" [class.value-completed]="item.isComplete"
+                        <label [for]="item.id" class="todo-value" [class.value-completed]="item.isComplete"
                                (dblclick)="startEditing(i)">
                           {{item.value}}
                         </label>
@@ -38,10 +39,10 @@
             </div>
         </div>
         <div class="todo-info" *ngIf="todoArray.length > 0">
-            <span class="todo-left">{{countNotComplite()}} items left</span>
+            <span class="todo-left">{{countNotComplete()}} items left</span>
 
             <div class="buttons-todo">
-                <button *ngFor="let cat of categories" [class.active-category]="category === cat"
+                <button *ngFor="let cat of categories" [class.active-category]="getCategory() === cat"
                     (click)="selectCategory(cat)" >
                     {{ cat }}
                 </button>
