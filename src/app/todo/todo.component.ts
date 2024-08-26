@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TodoDataServiceService } from '../service/todo-data-service.service';
+import { TodoItem } from '../types/todo';
 
 @Component({
   selector: 'app-todo',
@@ -74,7 +75,7 @@ export class TodoComponent {
   finishEditing() {
     if (this.editIndex !== null) {
       if (this.newTodoValue.trim()) {
-        this.todoDataService.updateTodoValue(this.editIndex, this.newTodoValue);
+        this.todoDataService.updateTodoValue(this.todoArray[this.editIndex].id, this.newTodoValue);
         this.todoArray = this.todoDataService.getAllTodos();
       }
       this.editIndex = null;
@@ -93,8 +94,3 @@ export class TodoComponent {
   }
 }
 
-export interface TodoItem {
-  id: string,
-  value: string,
-  isComplete: boolean
-}

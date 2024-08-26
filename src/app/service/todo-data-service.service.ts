@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { TodoItem } from '../todo/todo.component';
+import { TodoItem } from '../types/todo';
+
 
 @Injectable({
   providedIn: 'root'
@@ -71,9 +72,10 @@ export class TodoDataServiceService {
     return this.todos;
   }
 
-  updateTodoValue(index: number, newValue: string) {
-    if (this.todos[index]) {
-      this.todos[index].value = newValue;
+  updateTodoValue(id: string, newValue: string) {
+    const todo = this.todos.find(todo => todo.id === id);
+    if (todo) {
+      todo.value = newValue;
       this.saveToLocalStorage();
     }
   }
