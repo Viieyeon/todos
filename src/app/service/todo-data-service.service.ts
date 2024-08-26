@@ -26,7 +26,7 @@ export class TodoDataServiceService {
       isComplete: false
     }
     this.todos = [...this.todos, item];
-    localStorage.setItem('todos', JSON.stringify(this.todos));
+    this.saveToLocalStorage();
   }
 
   getCategory(){
@@ -35,7 +35,7 @@ export class TodoDataServiceService {
 
   removeTodo(index: number) {
     this.todos.splice(index, 1);
-    localStorage.setItem('todos', JSON.stringify(this.todos));
+    this.saveToLocalStorage();
   }
 
   checkAll() {
@@ -44,7 +44,7 @@ export class TodoDataServiceService {
       ...item,
       isComplete: !allTrue
     }));
-    localStorage.setItem('todos', JSON.stringify(this.todos));
+    this.saveToLocalStorage();
   }
 
   countNotComplete() {
