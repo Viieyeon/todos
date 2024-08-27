@@ -31,7 +31,7 @@
                       </ng-template>
                     </div>
 
-                <button class="btn-close" (click)="deleteTodo(i)" [class.d-none]="editIndex === i"></button>
+                <button class="btn-close" (click)="deleteTodo(item.id)" [class.d-none]="editIndex === i"></button>
             </div>
 
             <div class="todo-length text-center" *ngIf="getFilteredTodos().length === 0">

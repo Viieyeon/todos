@@ -34,8 +34,8 @@ export class TodoDataServiceService {
     return this.category;
   }
 
-  removeTodo(index: number) {
-    this.todos.splice(index, 1);
+  removeTodo(id: string) {
+    this.todos = this.todos.filter(todo => todo.id !== id);
     this.saveToLocalStorage();
   }
 
@@ -72,8 +72,8 @@ export class TodoDataServiceService {
     return this.todos;
   }
 
-  updateTodoValue(id: string, newValue: string) {
-    const todo = this.todos.find(todo => todo.id === id);
+  updateTodoValue(todoItem: TodoItem, newValue: string) {
+    let todo = this.todos.find(todo => todo.id === todoItem.id);
     if (todo) {
       todo.value = newValue;
       this.saveToLocalStorage();

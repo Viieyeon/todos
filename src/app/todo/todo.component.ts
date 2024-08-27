@@ -27,8 +27,8 @@ export class TodoComponent {
     this.inputValue = '';
   }
 
-  deleteTodo(i: number) {
-    this.todoDataService.removeTodo(i);
+  deleteTodo(id: string) {
+    this.todoDataService.removeTodo(id);
     this.todoArray = this.todoDataService.getAllTodos();
   }
 
@@ -75,7 +75,7 @@ export class TodoComponent {
   finishEditing() {
     if (this.editIndex !== null) {
       if (this.newTodoValue.trim()) {
-        this.todoDataService.updateTodoValue(this.todoArray[this.editIndex].id, this.newTodoValue);
+        this.todoDataService.updateTodoValue(this.todoArray[this.editIndex], this.newTodoValue);
         this.todoArray = this.todoDataService.getAllTodos();
       }
       this.editIndex = null;
