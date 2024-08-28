@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TodoDataServiceService } from '../service/todo-data-service.service';
 import { TodoItem } from '../types/todo';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-todo',
@@ -12,29 +13,31 @@ export class TodoComponent {
   todoArray: TodoItem[] = [];
   countNot = 0;
   categories = ['All', 'Active', 'Completed'];
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private todoDataService: TodoDataServiceService) { }
 
   ngOnInit() {
-    this.todoArray = this.todoDataService.getAllTodos();
+    this.todoDataService.getAllTodos()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((todos: TodoItem[]) => {
+        this.todoArray = todos;
+      })
   }
 
   saveTodo() {
     if (this.inputValue.trim()) {
       this.todoDataService.saveTodo(this.inputValue);
-      this.todoArray = this.todoDataService.getAllTodos();
     }
     this.inputValue = '';
   }
 
   deleteTodo(id: string) {
     this.todoDataService.removeTodo(id);
-    this.todoArray = this.todoDataService.getAllTodos();
   }
 
   checkAll() {
     this.todoDataService.checkAll();
-    this.todoArray = this.todoDataService.getAllTodos();
   }
 
   countNotComplete(): number {
@@ -47,7 +50,6 @@ export class TodoComponent {
 
   clearCompleted() {
     this.todoDataService.clearCompleted();
-    this.todoArray = this.todoDataService.getAllTodos();
   }
 
   getFilteredTodos(): TodoItem[] {
@@ -64,19 +66,12 @@ export class TodoComponent {
   startEditing(index: number) {
     this.editIndex = index;
     this.newTodoValue = this.todoArray[index].value;
-    setTimeout(() => {
-      const inputElement = document.getElementById('edit-input-' + index) as HTMLInputElement;
-      if (inputElement) {
-        inputElement.focus();
-      }
-    }, 0);
   }
 
   finishEditing() {
     if (this.editIndex !== null) {
       if (this.newTodoValue.trim()) {
         this.todoDataService.updateTodoValue(this.todoArray[this.editIndex], this.newTodoValue);
-        this.todoArray = this.todoDataService.getAllTodos();
       }
       this.editIndex = null;
       this.newTodoValue = '';
@@ -91,6 +86,11 @@ export class TodoComponent {
     if (event.key === 'Enter') {
       this.finishEditing();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
 
