@@ -6,7 +6,7 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class TodoDataServiceService {
+export class TodoDataService {
   private todos$ = new BehaviorSubject<TodoItem[]>([]);
   private category = 'All';
 
