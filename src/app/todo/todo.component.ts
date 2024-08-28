@@ -18,11 +18,23 @@ export class TodoComponent {
   constructor(private todoDataService: TodoDataServiceService) { }
 
   ngOnInit() {
-    this.todoDataService.getAllTodos()
+    this.todoDataService.getAllTodos$()
       .pipe(takeUntil(this.destroy$))
       .subscribe((todos: TodoItem[]) => {
         this.todoArray = todos;
       })
+  }
+
+  getFilteredTodos(): TodoItem[] {
+    let filteredTodos: TodoItem[] = [];
+  
+    this.todoDataService.getFilteredTodos$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((todos: TodoItem[]) => {
+        filteredTodos = todos;
+      });
+  
+    return filteredTodos;
   }
 
   saveTodo() {
@@ -50,10 +62,6 @@ export class TodoComponent {
 
   clearCompleted() {
     this.todoDataService.clearCompleted();
-  }
-
-  getFilteredTodos(): TodoItem[] {
-    return this.todoDataService.getFilteredTodos();
   }
 
   getCategory() {
