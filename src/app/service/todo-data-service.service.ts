@@ -1,55 +1,65 @@
 import { Injectable } from '@angular/core';
 import { TodoItem } from '../types/todo';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class TodoDataServiceService {
-
-  private todos: TodoItem[] = [];
+export class TodoDataService {
+  private todos$ = new BehaviorSubject<TodoItem[]>([]);
   private category = 'All';
 
-  constructor() { 
-    this.todos = this.getAllTodos();
+  constructor() {
+    this.loadAllTodos();
   }
 
-  getAllTodos(): TodoItem[] {
-    const todos = localStorage.getItem('todos');
-    return todos ? JSON.parse(todos) : [];
+  loadAllTodos(){
+    const todoStorage = localStorage.getItem('todos');
+    if (todoStorage) {
+      const todos: TodoItem[] = JSON.parse(todoStorage);
+      this.todos$.next(todos);
+    }
   }
 
-  saveTodo(value: string){
+  getAllTodos$(): Observable<TodoItem[]> {
+    return this.todos$.asObservable();
+  }
+
+  saveTodo(value: string) {
     const id = Date.now().toString();
     let item: TodoItem = {
       id: id,
       value: value,
       isComplete: false
     }
-    this.todos = [...this.todos, item];
-    this.saveToLocalStorage();
+    const currentTodos = this.todos$.value;
+    this.todos$.next([...currentTodos, item]);
   }
 
-  getCategory(){
+  getCategory() {
     return this.category;
   }
 
   removeTodo(id: string) {
-    this.todos = this.todos.filter(todo => todo.id !== id);
-    this.saveToLocalStorage();
+    const currentTodos = this.todos$.value;
+    let newArrTodos = currentTodos.filter(todo => todo.id !== id);
+    this.todos$.next(newArrTodos);
   }
 
   checkAll() {
-    const allTrue = this.todos.every(item => item.isComplete);
-    this.todos = this.todos.map(item => ({
+    const currentTodos = this.todos$.value;
+    const allTrue = currentTodos.every(item => item.isComplete)
+    let newArrTodos = currentTodos.map(item => ({
       ...item,
       isComplete: !allTrue
     }));
-    this.saveToLocalStorage();
+    this.todos$.next(newArrTodos);
   }
 
   countNotComplete() {
-    return this.todos.filter(item => !item.isComplete).length;
+    const currentTodos = this.todos$.value;
+    return currentTodos.filter(item => !item.isComplete).length;
   }
 
   selectCategory(selectedCategory: string): void {
@@ -57,30 +67,35 @@ export class TodoDataServiceService {
   }
 
   clearCompleted() {
-    this.todos = this.todos.filter(item => !item.isComplete);
-    this.saveToLocalStorage();
+    const currentTodos = this.todos$.value;
+    let newArrTodos = currentTodos.filter(item => !item.isComplete);
+    this.todos$.next(newArrTodos);
   }
 
-  getFilteredTodos(): TodoItem[] {
-    if (this.category === 'All') {
-      return this.todos;
-    } else if (this.category === 'Active') {
-      return this.todos.filter(item => !item.isComplete);
-    } else if (this.category === 'Completed') {
-      return this.todos.filter(item => item.isComplete);
-    }
-    return this.todos;
+  getFilteredTodos$(): Observable<TodoItem[]> {
+    return this.todos$.pipe(
+      map(currentTodos => {
+        if (this.category === 'All') {
+          return currentTodos;
+        } else if (this.category === 'Active') {
+          return currentTodos.filter(item => !item.isComplete);
+        } else if (this.category === 'Completed') {
+          return currentTodos.filter(item => item.isComplete);
+        }
+        return currentTodos;
+      })
+    );
   }
 
   updateTodoValue(todoItem: TodoItem, newValue: string) {
-    let todo = this.todos.find(todo => todo.id === todoItem.id);
-    if (todo) {
-      todo.value = newValue;
-      this.saveToLocalStorage();
-    }
+    const currentTodos = this.todos$.value;
+    let updateTodos = currentTodos.map(todo => 
+      todo.id === todoItem.id ? {...todo, value: newValue} : todo
+    );
+    this.todos$.next(updateTodos)
   }
 
-  private saveToLocalStorage() {
-    localStorage.setItem('todos', JSON.stringify(this.todos));
+  private saveToLocalStorage(todo: TodoItem[]) {
+    localStorage.setItem('todos', JSON.stringify(todo));
   }
 }
