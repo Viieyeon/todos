@@ -1,54 +1,52 @@
 <div class="todos">
-    <div class="container todo-container">
-        <h1 class="mt-5 text-warning">Todos</h1>
+    <ng-container *ngIf="filteredTodos$ | async as filteredTodos">
+        <div class="container todo-container" *ngIf="todoArrayLength$ | async as todoArrayLength">
+            <h1 class="mt-5 text-warning">Todos</h1>
 
-        <div class="todo-input">
-            <button class="todo-all-button" *ngIf="todoArray.length > 0" (click)="checkAll()"></button>
-            <input type="text" name="todoValue" [(ngModel)]="inputValue" placeholder="What needs to be done?"
-                (keydown.enter)="saveTodo()">
-        </div>
+            <div class="todo-input">
+                <button class="todo-all-button" *ngIf="todoArrayLength > 0" (click)="checkAll()"></button>
+                <input type="text" name="todoValue" [(ngModel)]="inputValue" placeholder="What needs to be done?"
+                    (keydown.enter)="saveTodo()">
+            </div>
 
-        <div class="todo-list" [class.d-none]="todoArray.length === 0">
-            <div class="todo-item custom-checkbox" *ngFor="let item of getFilteredTodos(); let i = index">
-                <div>
-                    <input type="checkbox" [name]="'check' + i" [checked]="item.isComplete">
-                    <span class="checkmark" (click)="item.isComplete = !item.isComplete" [class.d-none]="editIndex === i"></span>
-                    <ng-container *ngIf="editIndex === i; else displayLabel">
-                        <input 
-                              [id]="item.id"
-                               type="text"
-                               class="edit-value"
-                               [(ngModel)]="newTodoValue"
-                               (blur)="handleBlur()"
-                               (keydown)="handleKeydown($event)">
-                      </ng-container>
-                      
-                      <ng-template #displayLabel>
-                        <label [for]="item.id" class="todo-value" [class.value-completed]="item.isComplete"
-                               (dblclick)="startEditing(i)">
-                          {{item.value}}
-                        </label>
-                      </ng-template>
+            <div class="todo-list" [class.d-none]="todoArrayLength === 0">
+                <div class="todo-item custom-checkbox" *ngFor="let item of filteredTodos; let i = index">
+                    <div>
+                        <input type="checkbox" [name]="'check' + i" [checked]="item.isComplete">
+                        <span class="checkmark" (click)="item.isComplete = !item.isComplete"
+                            [class.d-none]="editIndex === i"></span>
+                        <ng-container *ngIf="editIndex === i; else displayLabel">
+                            <input [id]="item.id" type="text" class="edit-value" [(ngModel)]="newTodoValue"
+                                (blur)="handleBlur()" (keydown)="handleKeydown($event)">
+                        </ng-container>
+
+                        <ng-template #displayLabel>
+                            <label [for]="item.id" class="todo-value" [class.value-completed]="item.isComplete"
+                                (dblclick)="startEditing(i)">
+                                {{item.value}}
+                            </label>
+                        </ng-template>
                     </div>
 
-                <button class="btn-close" (click)="deleteTodo(item.id)" [class.d-none]="editIndex === i"></button>
-            </div>
+                    <button class="btn-close" (click)="deleteTodo(item.id)" [class.d-none]="editIndex === i"></button>
+                </div>
 
-            <div class="todo-length text-center" *ngIf="getFilteredTodos().length === 0">
-                <span class="not-task">There are no tasks</span>
+                <div class="todo-length text-center" *ngIf="filteredTodos.length === 0">
+                    <span class="not-task">There are no tasks</span>
+                </div>
+            </div>
+            <div class="todo-info" *ngIf="todoArrayLength > 0">
+                <span class="todo-left">{{countNotComplete()}} items left</span>
+
+                <div class="buttons-todo">
+                    <button *ngFor="let cat of categories" [class.active-category]="getCategory() === cat"
+                        (click)="selectCategory(cat)">
+                        {{ cat }}
+                    </button>
+                </div>
+
+                <button class="btn" (click)="clearCompleted()">Clear Completed</button>
             </div>
         </div>
-        <div class="todo-info" *ngIf="todoArray.length > 0">
-            <span class="todo-left">{{countNotComplete()}} items left</span>
-
-            <div class="buttons-todo">
-                <button *ngFor="let cat of categories" [class.active-category]="getCategory() === cat"
-                    (click)="selectCategory(cat)" >
-                    {{ cat }}
-                </button>
-            </div>
-
-            <button class="btn" (click)="clearCompleted()">Clear Completed</button>
-        </div>
-    </div>
+    </ng-container>
 </div>

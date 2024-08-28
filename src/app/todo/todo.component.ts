@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TodoDataServiceService } from '../service/todo-data-service.service';
 import { TodoItem } from '../types/todo';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { map, Observable, of, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-todo',
@@ -11,31 +11,36 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 export class TodoComponent {
   inputValue: string = '';
   todoArray: TodoItem[] = [];
+  todoArrayLength$: Observable<number>;
+  filteredTodos$: Observable<TodoItem[]>;
   countNot = 0;
   categories = ['All', 'Active', 'Completed'];
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private todoDataService: TodoDataServiceService) { }
+  constructor(private todoDataService: TodoDataServiceService) {
+    this.todoArrayLength$ = this.todoDataService.getAllTodos$().pipe(map(items => items.length))
+    this.filteredTodos$ = this.todoDataService.getFilteredTodos$();
+  }
 
   ngOnInit() {
-    this.todoDataService.getAllTodos$()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((todos: TodoItem[]) => {
-        this.todoArray = todos;
-      })
+    // this.todoDataService.getAllTodos$()
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((todos: TodoItem[]) => {
+    //     this.todoArray = todos;
+    //   })
   }
 
-  getFilteredTodos(): TodoItem[] {
-    let filteredTodos: TodoItem[] = [];
-  
-    this.todoDataService.getFilteredTodos$()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((todos: TodoItem[]) => {
-        filteredTodos = todos;
-      });
-  
-    return filteredTodos;
-  }
+  // getFilteredTodos(): TodoItem[] {
+  //   let filteredTodos: TodoItem[] = [];
+
+  //   this.todoDataService.getFilteredTodos$()
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe((todos: TodoItem[]) => {
+  //       filteredTodos = todos;
+  //     });
+
+  //   return filteredTodos;
+  // }
 
   saveTodo() {
     if (this.inputValue.trim()) {
