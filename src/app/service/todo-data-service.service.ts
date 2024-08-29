@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TodoItem } from '../types/todo';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 
 
 @Injectable({
@@ -8,7 +8,7 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 })
 export class TodoDataService {
   private todos$ = new BehaviorSubject<TodoItem[]>([]);
-  private category = 'All';
+  private category$ = new BehaviorSubject<string>('All');
 
   constructor() {
     this.loadAllTodos();
@@ -38,7 +38,7 @@ export class TodoDataService {
   }
 
   getCategory() {
-    return this.category;
+    return this.category$.value;
   }
 
   removeTodo(id: string) {
@@ -63,7 +63,7 @@ export class TodoDataService {
   }
 
   selectCategory(selectedCategory: string): void {
-    this.category = selectedCategory;
+    this.category$.next(selectedCategory);
   }
 
   clearCompleted() {
@@ -73,18 +73,18 @@ export class TodoDataService {
   }
 
   getFilteredTodos$(): Observable<TodoItem[]> {
-    return this.todos$.pipe(
-      map(currentTodos => {
-        if (this.category === 'All') {
+    return combineLatest(this.todos$, this.category$).pipe(
+      map(([currentTodos, category]) => {
+        if (category === 'All') {
           return currentTodos;
-        } else if (this.category === 'Active') {
+        } else if (category === 'Active') {
           return currentTodos.filter(item => !item.isComplete);
-        } else if (this.category === 'Completed') {
+        } else if (category === 'Completed') {
           return currentTodos.filter(item => item.isComplete);
         }
         return currentTodos;
       })
-    );
+    )
   }
 
   updateTodoValue(todoItem: TodoItem, newValue: string) {

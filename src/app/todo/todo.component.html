@@ -1,14 +1,13 @@
 <div class="todos">
+    <h1 class="mt-5 text-warning">Todos</h1>
+
+    <div class="todo-input">
+        <button class="todo-all-button" *ngIf="todoArrayLength$ | async" (click)="checkAll()"></button>
+        <input type="text" name="todoValue" [(ngModel)]="inputValue" placeholder="What needs to be done?"
+            (keydown.enter)="saveTodo()">
+    </div>
     <ng-container *ngIf="filteredTodos$ | async as filteredTodos">
         <div class="container todo-container" *ngIf="todoArrayLength$ | async as todoArrayLength">
-            <h1 class="mt-5 text-warning">Todos</h1>
-
-            <div class="todo-input">
-                <button class="todo-all-button" *ngIf="todoArrayLength > 0" (click)="checkAll()"></button>
-                <input type="text" name="todoValue" [(ngModel)]="inputValue" placeholder="What needs to be done?"
-                    (keydown.enter)="saveTodo()">
-            </div>
-
             <div class="todo-list" [class.d-none]="todoArrayLength === 0">
                 <div class="todo-item custom-checkbox" *ngFor="let item of filteredTodos; let i = index">
                     <div>
