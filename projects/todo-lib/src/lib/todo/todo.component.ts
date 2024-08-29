@@ -2,9 +2,13 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TodoDataService } from '../service/todo-data-service.service';
 import { TodoItem } from '../types/todo';
 import { map, Observable, Subject } from 'rxjs';
+import { CommonModule, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-todo',
+  selector: 'todo-lib-todo',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -82,4 +86,3 @@ export class TodoComponent {
   }
 
 }
-
