@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TodoDataService } from '../service/todo-data-service.service';
 import { TodoItem } from '../types/todo';
-import { map, Observable, Subject, Subscription, takeUntil } from 'rxjs';
+import { map, Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-todo',
   templateUrl: './todo.component.html',
-  styleUrl: './todo.component.css'
+  styleUrl: './todo.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoComponent {
   inputValue: string = '';
@@ -14,7 +15,6 @@ export class TodoComponent {
   filteredTodos$: Observable<TodoItem[]>;
   countNot = 0;
   categories = ['All', 'Active', 'Completed'];
-  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private todoDataService: TodoDataService) {
     this.todoArrayLength$ = this.todoDataService.getAllTodos$().pipe(map(items => items.length));
@@ -81,9 +81,5 @@ export class TodoComponent {
     }
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-  }
 }
 
