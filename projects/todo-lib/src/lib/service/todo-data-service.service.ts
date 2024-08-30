@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TodoItem } from '../types/todo';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-
+import { BehaviorSubject, catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class TodoDataService {
   private todos$ = new BehaviorSubject<TodoItem[]>([]);
   private category$ = new BehaviorSubject<string>('All');
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.loadAllTodos();
   }
 
@@ -41,10 +41,12 @@ export class TodoDataService {
     return this.category$.value;
   }
 
-  removeTodo(id: string) {
-    const currentTodos = this.todos$.value;
-    let newArrTodos = currentTodos.filter(todo => todo.id !== id);
-    this.todos$.next(newArrTodos);
+  removeTodo(id: string): Observable<any> {
+    return this.http.get<TodoItem[]>('/api/delete/' + id).pipe(
+      tap((response: TodoItem[]) => {
+        this.todos$.next(response);
+      })
+    );
   }
 
   checkAll() {
@@ -83,7 +85,8 @@ export class TodoDataService {
           return currentTodos.filter(item => item.isComplete);
         }
         return currentTodos;
-      })
+      }),
+      tap(todos => this.saveToLocalStorage(todos))
     )
   }
 

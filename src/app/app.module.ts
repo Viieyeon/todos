@@ -3,6 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TodoLibComponent } from '../../projects/todo-lib/src/public-api';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TodoInterceptor } from '../../projects/todo-lib/src/lib/interceptor/todo.interceptor';
 
 
 @NgModule({
@@ -14,7 +16,13 @@ import { TodoLibComponent } from '../../projects/todo-lib/src/public-api';
     AppRoutingModule,
     TodoLibComponent
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TodoInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

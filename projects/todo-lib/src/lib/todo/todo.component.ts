@@ -34,7 +34,7 @@ export class TodoComponent {
   }
 
   deleteTodo(id: string) {
-    this.todoDataService.removeTodo(id);
+    this.todoDataService.removeTodo(id).subscribe();
   }
 
   checkAll() {
