@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TodoDataService } from '../service/todo-data-service.service';
 import { TodoItem } from '../types/todo';
-import { map, Observable, Subject } from 'rxjs';
+import { map, Observable, Subject, takeUntil } from 'rxjs';
 import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -19,6 +19,7 @@ export class TodoComponent {
   filteredTodos$: Observable<TodoItem[]>;
   countNot = 0;
   categories = ['All', 'Active', 'Completed'];
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private todoDataService: TodoDataService) {
     this.todoArrayLength$ = this.todoDataService.getAllTodos$().pipe(map(items => items.length));
@@ -34,7 +35,9 @@ export class TodoComponent {
   }
 
   deleteTodo(id: string) {
-    this.todoDataService.removeTodo(id).subscribe();
+    this.todoDataService.removeTodo(id)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe();
   }
 
   checkAll() {
@@ -83,6 +86,11 @@ export class TodoComponent {
     if (event.key === 'Enter') {
       this.finishEditing();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
 }
