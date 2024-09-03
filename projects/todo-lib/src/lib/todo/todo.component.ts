@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TodoDataService } from '../service/todo-data-service.service';
 import { TodoItem } from '../types/todo';
-import { map, Observable, Subject } from 'rxjs';
-import { CommonModule, NgIf } from '@angular/common';
+import { catchError, EMPTY, map, Observable, Subject, takeUntil } from 'rxjs';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -17,14 +17,13 @@ export class TodoComponent {
   inputValue: string = '';
   todoArrayLength$: Observable<number>;
   filteredTodos$: Observable<TodoItem[]>;
-  countNot = 0;
   categories = ['All', 'Active', 'Completed'];
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private todoDataService: TodoDataService) {
     this.todoArrayLength$ = this.todoDataService.getAllTodos$().pipe(map(items => items.length));
     this.filteredTodos$ = this.todoDataService.getFilteredTodos$();
   }
-
 
   saveTodo() {
     if (this.inputValue.trim()) {
@@ -34,7 +33,14 @@ export class TodoComponent {
   }
 
   deleteTodo(id: string) {
-    this.todoDataService.removeTodo(id);
+    this.todoDataService.removeTodo(id).pipe(
+      takeUntil(this.destroy$),
+      catchError(error => {
+        console.error('Error deleting todo:', error);
+        return EMPTY; 
+      })
+    )
+    .subscribe();
   }
 
   checkAll() {
@@ -83,6 +89,11 @@ export class TodoComponent {
     if (event.key === 'Enter') {
       this.finishEditing();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
 }
